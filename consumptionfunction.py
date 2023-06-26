@@ -50,15 +50,12 @@ class ConsumptionFunction(Scene):
         self.play(a.animate().set_value(17))
         self.play(a.animate().set_value(50))
         ConsumptionDecimal = VGroup(MathTex("C_f="), DecimalA.copy(), MathTex("+"), DecimalB.copy(), MathTex(r"\times Y_d")).arrange()
-        
+        self.add(ConsumptionDecimal)
         ConsumptionComponofDecimal = VGroup(DecimalA, DecimalB)
         self.play(
-                    DecimalA.animate().set_x(ConsumptionDecimal[1].get_x()),
-                    DecimalA.animate().set_y(ConsumptionDecimal[1].get_y()),
-                    DecimalB.animate().set_x(ConsumptionDecimal[3].get_x()),
-                    DecimalB.animate().set_y(ConsumptionDecimal[3].get_y())
-
-                    )
+                    DecimalA.animate().scale(0.001),
+                    DecimalB.animate().scale(0.001)
+                )
         self.wait(5)
         #self.play(ConsumptionCurve(lambda x: 20 + 0.8*x))
 
