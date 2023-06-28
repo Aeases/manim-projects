@@ -1,6 +1,6 @@
 from manim import *
 
-Skip_Prev = False
+Skip_Prev = True
 
 class ConsumptionFunction(Scene):
     def construct(self):
@@ -58,7 +58,7 @@ class ConsumptionFunction(Scene):
         self.play(Unwrite(ConsumptionCurve), 
                   Uncreate(VGroup(a_label)), 
                   ReplacementTransform(ConsumptionDecimal.clear_updaters(), ConsumptionFormula.to_edge(UP, buff=0.5).scale(1.5)), rate_functions=rate_functions.bezier)
-        self.next_section()
+        self.next_section(skip_animations=Skip_Prev)
         #ConsumptionFormulae = MathTex('C_f=', 'a_c', '+', 'b', 'Y_d').to_edge(UP, buff=0.5).move_to(ConsumptionFormula).scale(1.25)
         #Cons_Auton_Brace = Brace(mobject=ConsumptionFormulae[1], direction=DOWN, color=YELLOW)
         #Cons_Auton_Text = Text("Autonomous \n Consumption", font_size=24, color=YELLOW).next_to(Cons_Auton_Brace, DOWN)
@@ -119,9 +119,8 @@ class ConsumptionFunction(Scene):
                 FadeOut(tex_Brace),
                 FadeOut(tex_Text),
                 Unwrite(plotteddata),
-                
             ))
-                    
+                
 
             self.remove(ConsumptionDecimal, ConsumptionFormula)
 
@@ -130,4 +129,7 @@ class ConsumptionFunction(Scene):
 
         for animation in animations:
             self.wait(stop_condition=(self.play(animation, lag_ratio=0.5)))
+        self.next_section()
+        self.play([FadeOut(VGroup(Prev_Formulae[0:2]))])
+        self.wait(5)
             
