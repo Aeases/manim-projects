@@ -1,6 +1,6 @@
 from manim import *
 
-Skip_Prev = True
+Skip_Prev = False
 
 class ConsumptionFunction(Scene):
     def construct(self):
@@ -24,16 +24,17 @@ class ConsumptionFunction(Scene):
             a_label_point, LEFT
             ).add_updater(
                 lambda s: s.next_to(ax.y_axis.n2p(a.get_value()), LEFT))
-        x_axislabel = ax.get_x_axis_label(r'Y_d')
+        x_axislabel = ax.get_x_axis_label(r'Y_d').shift(DOWN/2.5)
         y_axislabel = ax.get_y_axis_label(r'AE')
-        ConsumptionCurve = ax.plot(lambda x: func(x))
-        ConsumptionCurve.add_updater(
-            lambda m: m.become(
-                ax.plot(
-                    lambda x: func(x)
-                )
-            )
-        )
+        #ConsumptionCurve = ax.plot(lambda x: func(x)).set_color(ORANGE)
+        ConsumptionCurve = always_redraw(lambda: ax.plot(lambda x: func(x)).set_color(ORANGE))
+#        ConsumptionCurve.add_updater(
+#            lambda m: m.become(
+#                ax.plot(
+#                    lambda x: func(x)
+#                )
+#            )
+#        )
         
         ConsumptionFormula = MathTex(r'C_f={{a}}+{{b}}{{Y_d}}')
         self.play(Write(ConsumptionFormula))
@@ -66,14 +67,14 @@ class ConsumptionFunction(Scene):
         #a.set_value(0.8)
 
         Formulae = {
-            "Consumption": ["C_f = {{a_c}}+bY_d", "55-60%", YELLOW, 60],
-            "Investment": ["I = {{a_I}}", "16-23%", TEAL, 16],
-            "Government": ["G = {{a_g}}", "23%", PURPLE, 23],
+            "Consumption": ["{{C}} = {{a_c}}", "55-60%", YELLOW, 60],
+            "Investment": ["{{I}} = {{a_I}}", "16-23%", TEAL, 13],
+            "Government": ["{{G}} = {{a_g}}", "23%", PURPLE, 23],
         }
         animations = []
-        Prev_Formulae = [
+        Prev_Formulae = VGroup(
             ConsumptionFormula
-        ]
+        )
         for idx, Formula in enumerate(Formulae.values()):
             PreviousFormula = Prev_Formulae[idx]
             IsFirstOne = PreviousFormula == ConsumptionFormula
@@ -81,20 +82,24 @@ class ConsumptionFunction(Scene):
             if (IsFirstOne):
                 tex.move_to(ConsumptionFormula)
                 print("fuck")
+
             
             color = Formula[2]
             tex.scale(1.5)
-            tex[1].set_color(color)
+            tex[2].set_color(color)
 
-            tex_Brace = Brace(mobject=tex[1][1], direction=DOWN, color=color)
-            tex_Text = Text(f"Autonomous \n {list(Formulae.keys())[idx]} Expenditure", font_size=24, color=color).next_to(tex_Brace, DOWN)
+            tex_Brace = Brace(mobject=tex[2], direction=DOWN, color=color)
+            tex_Text = Text(f"Autonomous {list(Formulae.keys())[idx]} Expenditure", font_size=24, color=color).next_to(tex_Brace, DOWN)
             plotteddata = ax.plot(lambda x: Formula[3]+(x*0)).set_color(color)
             if IsFirstOne:
 
-                animations.append(LaggedStart(
-                    FadeOut(ConsumptionFormula, run_time=0),
-                    TransformMatchingShapes(PreviousFormula, tex),
+                animations.append(
+                    
+                    LaggedStart(
+                    #FadeOut(ConsumptionFormula, run_time=0),
+                    TransformMatchingShapes(ConsumptionFormula, tex),
                     #tex.animate().set_opacity(100)
+                    lag_ratio=0
                 ))
                 
             else: animations.append(
@@ -110,7 +115,7 @@ class ConsumptionFunction(Scene):
                 
             animations.append(LaggedStart(
                 FadeIn(tex_Brace),
-                tex[1].animate().set_color(color),
+                tex[2].animate().set_color(color),
                 Write(tex_Text),
                 Create(plotteddata),
                 lag_ratio=0.1
@@ -122,14 +127,71 @@ class ConsumptionFunction(Scene):
             ))
                 
 
-            self.remove(ConsumptionDecimal, ConsumptionFormula)
+            #self.remove(ConsumptionDecimal, ConsumptionFormula)
 
             print(f"I am {Formula[0]}, I believe in: {PreviousFormula}")
-            Prev_Formulae.append(tex)
-
+            Prev_Formulae.add(tex)
+        
+        
+        animations.append(
+            Prev_Formulae[-1].animate().scale(0.75)
+        )
         for animation in animations:
             self.wait(stop_condition=(self.play(animation, lag_ratio=0.5)))
+        
+        Prev_Formulae.remove(ConsumptionFormula)
         self.next_section()
-        self.play([FadeOut(VGroup(Prev_Formulae[0:2]))])
-        self.wait(5)
+        ConstantCurves = []
+        for Formula in Formulae.values():
+            ConstantCurves.append(ax.plot(lambda x: Formula[3]+(x*0)).set_color(Formula[2]))
+        
+        AEComp_PREEquals=VGroup()
+        AEComp_AFTERequals = VGroup()
+        AEComp_equals = VGroup()
+        AEComp_PREequalsTarget = VGroup()
+
+        for Formula in Prev_Formulae:
+            AEComp_PREEquals.add(Formula[0:1])
+            AEComp_PREequalsTarget.add(Formula[0])
+            AEComp_AFTERequals.add(Formula[2])
+            AEComp_equals.add(Formula[1])
+        
+        Aggregate_Formula = MathTex(r"{{AE}} = ( {{a_I}}+{{a_g}}+{{X-M}}+{{a_c}} ) \times {{b}}{{Y_d}}")
+        Aggregate_Formula.set_color_by_tex("a_I", TEAL).set_color_by_tex("a_c", YELLOW).set_color_by_tex("a_g", PURPLE)
+        Aggregate_Formula.to_edge(UP, buff=0.5)
+        Aggregate_Formula.set_opacity_by_tex("+", 0.5).set_opacity_by_tex("-", 0.5).set_opacity_by_tex("X-M", 0.75)
+        self.play(
+        LaggedStart(
+            LaggedStart(
+                Create(ConstantCurves[0]),
+                Create(ConstantCurves[1]),
+                Create(ConstantCurves[2]),
+                lag_ratio=0.2,
+            ),
+            LaggedStart(
+                AEComp_PREEquals[0].animate.next_to(ConstantCurves[0]).set_color(YELLOW),
+                AEComp_PREEquals[1].animate().next_to(ConstantCurves[1]).set_color(TEAL),
+                AEComp_PREEquals[2].animate().next_to(ConstantCurves[2]).set_color(PURPLE),
+                lag_ratio=0.2,
+            ),
+            LaggedStart(
+                #ReplacementTransform(, Aggregate_Formula), 
+                FadeOut(AEComp_equals),
+                TransformMatchingShapes(VGroup(AEComp_AFTERequals, x_axislabel.copy()), Aggregate_Formula, path_arc=np.sin(5**2)),
+                lag_ratio=0.4,
+                run_time=2
+            ),
+            lag_ratio=0.45
+        ))
+#        self.play(
+#                        LaggedStart(
+#                Transform(AEComp_PREEquals[0], AEComp_PREequalsTarget[0]),
+#                Transform(AEComp_PREEquals[1], AEComp_PREequalsTarget[1]),
+#                Transform(AEComp_PREEquals[2], AEComp_PREequalsTarget[2]),
+#                lag_ratio=0.2,
+#            ),
+#        )
+
+
+        self.wait(1)
             
