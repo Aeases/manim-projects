@@ -20,7 +20,8 @@ class TimeSereis(Scene):
         self.play(
             Create(ax),
             Write(plot),
-            Write(UnText)
+            Write(UnText),
+            run_time=2
         )
         self.play(
             ReplacementTransform(plot, plot_seasoned),
