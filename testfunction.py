@@ -51,6 +51,7 @@ class Testfunc(Scene):
         rot = Dot(ax.c2p(resultx, resulty))
         self.play(Write(rot))
         self.play(Write(tex_Text), Create(Brace), FadeOut(a_label))
+        self.wait(2)
 
 
 

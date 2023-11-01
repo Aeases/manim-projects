@@ -314,7 +314,6 @@ class ConsumptionFunction(Scene):
         auton_i_g.add_updater(lambda m: #could probably do this with always_redraw on the original as well
             m.next_to(ConstantCurves[2]).shift(LEFT/2+DOWN/2+UP/3-UP/4)
         )
-        thisisleavinginlike2secs = MathTex("23+13=36")
         self.play(
             Succession(
                 AnimationGroup(
@@ -322,18 +321,13 @@ class ConsumptionFunction(Scene):
                     lag_ratio=0.3
                 )
             ),
-            Succession(
-                Write(thisisleavinginlike2secs),
-                FadeOut(thisisleavinginlike2secs)
-            )
-
-
         )
         self.play(
                     Government_NumL.animate().set_color(BLUE_D),
                     Aggregate_Formula[1].animate().set_color_by_tex("a_{I+g}", BLUE_D),
                     lag_ratio=0.3
       )
+        
         self.wait(6)
         
         
