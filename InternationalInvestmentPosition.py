@@ -38,7 +38,7 @@ class InternationalInvestmentPosition(Scene):
 
     ax = Axes(
       x_range=[2014, 2022, 1],
-      y_range=[0, 2000, 100],
+      y_range=[0, 4500, 1000],
       tips=False
     )
     years = {}
@@ -46,13 +46,36 @@ class InternationalInvestmentPosition(Scene):
       years[x] = x
     ax.x_axis.add_labels(years)
     pIIP = list(map(lambda p: ax.c2p(float(p), float(IIP[p])), IIP))
+    aIIP = list(map(lambda p: ax.c2p(float(p), float(AIA[p])), AIA))
+    fIIP = list(map(lambda p: ax.c2p(float(p), float(FIA[p])), FIA))
     print(pIIP)
     self.add(ax)
-    dot = Dot(pIIP[0])
-    self.add(dot)
-    for point in pIIP:
-      self.play(Write(ArcBetweenPoints(pIIP[0], point)))
-        
+    mapper = lambda m: list(map(lambda p: Dot(p), m))
+    FIAGroup = VGroup(*mapper(fIIP))
+    AIAGroup = VGroup(*mapper(aIIP))
+    IIPGroup = VGroup(*mapper(pIIP))
+    self.play(Write(AIAGroup.set_color(BLUE)), Write(FIAGroup.set_color(ORANGE)), )
+    for i in range(1, 8):
+      year = i + 2015
+      brace = BraceBetweenPoints(aIIP[i], fIIP[i])
+      AIAamount = lambda y: float(AIA[str(y)])
+      FIAamount = lambda y: float(FIA[str(y)])
+      print(FIA[str(year)])
+      decimal = DecimalNumber((AIAamount(year) - FIAamount(year))).scale(0.65).next_to(brace, LEFT)
+      
+      self.play(Write(brace), Write(decimal))
+      #self.play(TransformFromCopy(VGroup(FIAGroup[i], AIAGroup[i]), IIPGroup[i]))
+      IIPDot = IIPGroup[i]
+      if (AIAamount(year) - FIAamount(year) < AIAamount(year-1) - FIAamount(year-1)):
+        IIPDot.set_color(RED_E)
+      else:
+        IIPDot.set_color(GREEN_C)
+      self.play(ReplacementTransform(VGroup(brace, decimal), IIPDot))
+      
+
+
+
+         
 
 
 

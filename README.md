@@ -21,6 +21,4 @@ https://github.com/Aeases/manim-projects/assets/96164686/bed0dd7d-b861-47ef-9c13
 
 # Table Scene
 
-https://github.com/Aeases/manim-projects/raw/main/compiled_media/TableScene.mp4
-
-![](https://github.com/Aeases/manim-projects/raw/main/compiled_media/TableScene.mp4)
+https://github.com/Aeases/manim-projects/assets/96164686/843c87cd-d086-4644-88c4-14375a8054ad
